@@ -13,7 +13,13 @@ pipeline {
         }
     }
 
+    options {
+        // From the Jenkins documentation: "skips stages once the build status has gone to UNSTABLE"
+        skipStagesAfterUnstable()
+    }
+
     stages {
+        // Each call to 'stage' defines a stage that appears in the Jenkins UI
         stage('Build') {
             steps {
                 sh 'mvn -B -DskipTests clean package'
@@ -29,6 +35,12 @@ pipeline {
                 always {
                     junit 'target/surefire-reports/*.xml'
                 }
+            }
+        }
+
+        stage('Deliver') {
+            steps {
+                sh './jenkins/scripts/deliver.sh'
             }
         }
     }
